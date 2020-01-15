@@ -1,5 +1,6 @@
 package com.milloc.security.interceptor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milloc.security.annotation.RightControl;
 import com.milloc.security.dto.CurrentUser;
@@ -41,22 +42,19 @@ public class RightControlInterceptor implements HandlerInterceptor {
         if (controller.getAnnotation(RightControl.class) != null) {
             if (!currentUser.getRights().contains(controller.toString())) {
                 unAuthorization(currentUser, handlerMethod.getMethod());
-                return false;
             }
         }
 
         if (handlerMethod.getMethodAnnotation(RightControl.class) != null) {
             if (!currentUser.getRights().contains(handlerMethod.getMethod().toString())) {
                 unAuthorization(currentUser, handlerMethod.getMethod());
-                return false;
             }
         }
 
         return true;
     }
 
-    @SneakyThrows
-    private void unAuthorization(CurrentUser user, Method method) {
+    private void unAuthorization(CurrentUser user, Method method) throws UnAuthorizationException, JsonProcessingException {
         log.debug("没有权限 user = {}, method = {}", objectMapper.writeValueAsString(user), method.toString());
         throw new UnAuthorizationException(user, method);
     }

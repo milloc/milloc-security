@@ -30,7 +30,7 @@ public class RightControlServiceImpl implements RightControlService {
     private Set<String> rightControls;
 
     @Override
-    public Set<String> listRightControls() {
+    public synchronized Set<String> listRightControls() {
         if (rightControls == null) {
             scanRightControls();
             return rightControls;
